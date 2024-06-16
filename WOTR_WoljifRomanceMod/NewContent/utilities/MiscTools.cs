@@ -11,6 +11,7 @@ using TabletopTweaks.Extensions;
 using System.Collections.Generic;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.Blueprints.Area;
+using System.Reflection;
 
 //##########################################################################################################################
 // MISC TOOLS
@@ -158,7 +159,7 @@ namespace WOTR_WoljifRomanceMod
             return "FakeLocator Caption";
         }
 
-        public override UnityEngine.Vector3 GetValueInternal()
+        protected override UnityEngine.Vector3 GetValueInternal()
         {
             return new UnityEngine.Vector3(x, y, z);
         }
@@ -178,7 +179,7 @@ namespace WOTR_WoljifRomanceMod
             return "Generic Unit Evaluator";
         }
 
-        public override UnitEntityData GetValueInternal()
+        protected override UnitEntityData GetValueInternal()
         {
             return action.entity;
         }
@@ -195,11 +196,11 @@ namespace WOTR_WoljifRomanceMod
     public class CampEventExists : Kingmaker.ElementsSystem.Condition
     {
         public Kingmaker.RandomEncounters.Settings.BlueprintCampingEncounter Encounter;
-        public override bool CheckCondition()
+        protected override bool CheckCondition()
         {
             return Game.Instance.Player.Camping.ExtraEncounters.IndexOf(Encounter) != -1;
         }
-        public override string GetConditionCaption()
+        protected override string GetConditionCaption()
         {
             return "Checks if camp encounter is in encounter list.";
         }
@@ -371,7 +372,9 @@ namespace WOTR_WoljifRomanceMod
                                         (Kingmaker.Designers.EventConditionActionSystem.Evaluators.CompanionInParty));
                 companioneval.IncludeDettached = true;
                 companioneval.IncludeRemote = true;
-                companioneval.m_Companion = GetCompanionReference(companion);
+                typeof(Kingmaker.Designers.EventConditionActionSystem.Evaluators.CompanionInParty)
+                       .GetField("m_Companion", BindingFlags.NonPublic | BindingFlags.Instance)
+                       .SetValue(companioneval, GetCompanionReference(companion));
                 result = companioneval;
             }
             result.Owner = owner;

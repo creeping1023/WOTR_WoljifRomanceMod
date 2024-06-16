@@ -75,8 +75,10 @@ namespace WOTR_WoljifRomanceMod
             var result = CreateCondition<Kingmaker.Designers.EventConditionActionSystem.Conditions.AnswerSelected>
                          (name, not, bp =>
                 {
-                    bp.m_Answer = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
-                                  <Kingmaker.Blueprints.BlueprintAnswerReference>(answer);
+                    typeof(Kingmaker.Designers.EventConditionActionSystem.Conditions.AnswerSelected)
+                        .GetField("m_Answer", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                        .SetValue(bp, Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
+                                   <Kingmaker.Blueprints.BlueprintAnswerReference>(answer));
                     bp.CurrentDialog = currentonly;
                 });
             return result;
@@ -101,8 +103,10 @@ namespace WOTR_WoljifRomanceMod
         {
             var result = CreateCondition<Kingmaker.Designers.EventConditionActionSystem.Conditions.CueSeen>(name, not, bp =>
             {
-                bp.m_Cue = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
-                           <Kingmaker.Blueprints.BlueprintCueBaseReference>(cue);
+                typeof(Kingmaker.Designers.EventConditionActionSystem.Conditions.CueSeen)
+                    .GetField("m_Cue", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                    .SetValue(bp, Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
+                           <Kingmaker.Blueprints.BlueprintCueBaseReference>(cue));
                 bp.CurrentDialog = currentonly;
             });
             return result;
@@ -121,8 +125,10 @@ namespace WOTR_WoljifRomanceMod
             var result = CreateCondition<Kingmaker.Assets.Designers.EventConditionActionSystem.Conditions.DialogSeen>
                          (name, not, bp =>
                 {
-                    bp.m_Dialog = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
-                                  <Kingmaker.Blueprints.BlueprintDialogReference>(dialog);
+                    typeof(Kingmaker.Assets.Designers.EventConditionActionSystem.Conditions.DialogSeen)
+                        .GetField("m_Dialog", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                        .SetValue(bp, Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
+                                   <Kingmaker.Blueprints.BlueprintDialogReference>(dialog));
                 });
             return result;
         }
@@ -226,7 +232,9 @@ namespace WOTR_WoljifRomanceMod
             var result = CreateCondition<Kingmaker.Designers.EventConditionActionSystem.Conditions.CompanionInParty>
                          (name, not, bp =>
                 {
-                    bp.m_companion = CompanionTools.GetCompanionReference(companion);
+                    typeof(Kingmaker.Designers.EventConditionActionSystem.Conditions.CompanionInParty)
+                        .GetField("m_companion", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                        .SetValue(bp, CompanionTools.GetCompanionReference(companion));
                     bp.MatchWhenActive = true;
                     bp.MatchWhenDetached = true;
                     bp.MatchWhenRemote = true;
@@ -247,7 +255,9 @@ namespace WOTR_WoljifRomanceMod
             var result = CreateCondition<Kingmaker.Designers.EventConditionActionSystem.Conditions.CompanionInParty>
                          (name, not, bp =>
                 {
-                    bp.m_companion = CompanionTools.GetCompanionReference(companion);
+                    typeof(Kingmaker.Designers.EventConditionActionSystem.Conditions.CompanionInParty)
+                        .GetField("m_companion", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                        .SetValue(bp, CompanionTools.GetCompanionReference(companion));
                     bp.MatchWhenDead = true;
                 });
             return result;
@@ -266,7 +276,9 @@ namespace WOTR_WoljifRomanceMod
             var result = CreateCondition<Kingmaker.Designers.EventConditionActionSystem.Conditions.CompanionInParty>
                          (name, not, bp =>
                 {
-                    bp.m_companion = CompanionTools.GetCompanionReference(companion);
+                    typeof(Kingmaker.Designers.EventConditionActionSystem.Conditions.CompanionInParty)
+                        .GetField("m_companion", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                        .SetValue(bp, CompanionTools.GetCompanionReference(companion));
                     bp.MatchWhenActive = true;
                 });
             return result;
@@ -285,8 +297,10 @@ namespace WOTR_WoljifRomanceMod
             var result = CreateCondition<Kingmaker.Designers.EventConditionActionSystem.Conditions.CurrentAreaIs>
                          (name, not, bp =>
                 {
-                    bp.m_Area = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
-                                <Kingmaker.Blueprints.BlueprintAreaReference>(area);
+                    typeof(Kingmaker.Designers.EventConditionActionSystem.Conditions.CurrentAreaIs)
+                        .GetField("m_Area", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                        .SetValue(bp, Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
+                                   <Kingmaker.Blueprints.BlueprintAreaReference>(area));
                 });
             return result;
         }
@@ -346,8 +360,10 @@ namespace WOTR_WoljifRomanceMod
                        bool not=false)
         {
             var result = CreateCondition<Kingmaker.Designers.EventConditionActionSystem.Conditions.EtudeStatus>(name,not);
-            result.m_Etude = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
-                             <Kingmaker.Blueprints.BlueprintEtudeReference>(etude);
+            typeof(Kingmaker.Designers.EventConditionActionSystem.Conditions.EtudeStatus)
+                .GetField("m_Etude", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                .SetValue(result, Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
+                            <Kingmaker.Blueprints.BlueprintEtudeReference>(etude));
             switch (status)
             {
                 case EtudeTools.EtudeStatus.NotStarted:
@@ -384,8 +400,10 @@ namespace WOTR_WoljifRomanceMod
             var result = CreateCondition
                          <Kingmaker.Designers.EventConditionActionSystem.Conditions.AnotherEtudeOfGroupIsPlaying>
                          (name, not);
-            result.m_Group = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
-                             <BlueprintEtudeConflictingGroupReference>(group);
+            typeof(Kingmaker.Designers.EventConditionActionSystem.Conditions.AnotherEtudeOfGroupIsPlaying)
+                .GetField("m_Group", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                .SetValue(result, Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
+                            <BlueprintEtudeConflictingGroupReference>(group));
             return result;
         }
 
@@ -402,8 +420,10 @@ namespace WOTR_WoljifRomanceMod
             var result = CreateCondition<Kingmaker.Designers.EventConditionActionSystem.Conditions.FlagInRange>
                          (name, not, bp =>
                 {
-                    bp.m_Flag = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
-                                <Kingmaker.Blueprints.BlueprintUnlockableFlagReference>(flag);
+                    typeof(Kingmaker.Designers.EventConditionActionSystem.Conditions.FlagInRange)
+                        .GetField("m_Flag", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                        .SetValue(bp, Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
+                                   <Kingmaker.Blueprints.BlueprintUnlockableFlagReference>(flag));
                     bp.MinValue = min;
                     bp.MaxValue = max;
                 });
@@ -467,7 +487,9 @@ namespace WOTR_WoljifRomanceMod
             var result = CreateCondition<Kingmaker.Designers.EventConditionActionSystem.Conditions.QuestStatus>
                          (name, not, bp =>
                 {
-                    bp.m_Quest = questref;
+                    typeof(Kingmaker.Designers.EventConditionActionSystem.Conditions.QuestStatus)
+                        .GetField("m_Quest", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                        .SetValue(bp, questref);
                     bp.State = status;
                 });
             return result;
@@ -488,8 +510,10 @@ namespace WOTR_WoljifRomanceMod
         {
             var result = CreateCondition<Kingmaker.Designers.EventConditionActionSystem.Conditions.HasFact>(name, not, bp =>
             {
-                bp.m_Fact = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
-                            <Kingmaker.Blueprints.BlueprintUnitFactReference>(fact);
+                typeof(Kingmaker.Designers.EventConditionActionSystem.Conditions.HasFact)
+                    .GetField("m_Fact", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                    .SetValue(bp, Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
+                               <Kingmaker.Blueprints.BlueprintUnitFactReference>(fact));
                 bp.Unit = CompanionTools.GetCompanionEvaluator(companion, owner);
             });
             return result;

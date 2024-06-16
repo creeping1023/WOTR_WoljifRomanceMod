@@ -11,6 +11,7 @@ using Kingmaker.Utility;
 using JetBrains.Annotations;
 using System;
 using Kingmaker.Designers.EventConditionActionSystem.NamedParameters;
+using System.Reflection;
 
 //##########################################################################################################################
 // ACTION TOOLS
@@ -67,8 +68,10 @@ namespace WOTR_WoljifRomanceMod
         {
             var action = GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.AddCampingEncounter>(bp =>
             {
-                bp.m_Encounter = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
-                                 <BlueprintCampingEncounterReference>(Encounter);
+                typeof(Kingmaker.Designers.EventConditionActionSystem.Actions.AddCampingEncounter)
+                                .GetField("m_Encounter", BindingFlags.NonPublic | BindingFlags.Instance)
+                                .SetValue(bp, Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
+                                <BlueprintCampingEncounterReference>(Encounter));
             });
             return action;
         }
@@ -77,8 +80,10 @@ namespace WOTR_WoljifRomanceMod
         {
             var action = GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.RemoveCampingEncounter>(bp =>
             {
-                bp.m_Encounter = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
-                                 <BlueprintCampingEncounterReference>(Encounter);
+                typeof(Kingmaker.Designers.EventConditionActionSystem.Actions.RemoveCampingEncounter)
+                                .GetField("m_Encounter", BindingFlags.NonPublic | BindingFlags.Instance)
+                                .SetValue(bp, Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
+                                <BlueprintCampingEncounterReference>(Encounter));
             });
             return action;
         }
@@ -99,7 +104,7 @@ namespace WOTR_WoljifRomanceMod
                 bp.TargetUnit = CompanionTools.GetCompanionEvaluator(target, owner);
                 bp.BarkDurationByText = true;
                 bp.WhatToBarkShared = new Kingmaker.Localization.SharedStringAsset();
-                bp.WhatToBarkShared.String = new Kingmaker.Localization.LocalizedString { m_Key = name };
+                bp.WhatToBarkShared.String = new Kingmaker.Localization.LocalizedString { Key = name };
                 bp.WhatToBark = bp.WhatToBarkShared.String;
             });
             return result;
@@ -158,8 +163,10 @@ namespace WOTR_WoljifRomanceMod
         {
             var result = GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.IncrementFlagValue>(bp =>
             {
-                bp.m_Flag = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
-                            <Kingmaker.Blueprints.BlueprintUnlockableFlagReference>(flag);
+                typeof(Kingmaker.Designers.EventConditionActionSystem.Actions.IncrementFlagValue)
+                                .GetField("m_Flag", BindingFlags.NonPublic | BindingFlags.Instance)
+                                .SetValue(bp, Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
+                                <Kingmaker.Blueprints.BlueprintUnlockableFlagReference>(flag));
                 bp.Value = new Kingmaker.Designers.EventConditionActionSystem.Evaluators.IntConstant { Value = amount };
                 bp.UnlockIfNot = true;
             });
@@ -171,8 +178,10 @@ namespace WOTR_WoljifRomanceMod
         {
             var result = GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.LockFlag>(bp =>
             {
-                bp.m_Flag = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
-                            <Kingmaker.Blueprints.BlueprintUnlockableFlagReference>(flag);
+                typeof(Kingmaker.Designers.EventConditionActionSystem.Actions.LockFlag)
+                                .GetField("m_Flag", BindingFlags.NonPublic | BindingFlags.Instance)
+                                .SetValue(bp, Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
+                                <Kingmaker.Blueprints.BlueprintUnlockableFlagReference>(flag));
             });
             return result;
         }
@@ -182,8 +191,7 @@ namespace WOTR_WoljifRomanceMod
         {
             var result = GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.UnlockFlag>(bp =>
             {
-                bp.m_flag = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
-                            <Kingmaker.Blueprints.BlueprintUnlockableFlagReference>(flag);
+                bp.flag = flag;
             });
             return result;
         }
@@ -201,8 +209,7 @@ namespace WOTR_WoljifRomanceMod
         {
             var action = GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.PlayCutscene>(bp =>
             {
-                bp.m_Cutscene = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
-                                <Kingmaker.Blueprints.CutsceneReference>(cutscene);
+                bp.Cutscene = cutscene;
                 bp.Owner = owner;
                 bp.Parameters = new ParametrizedContextSetter();
             });
@@ -213,8 +220,10 @@ namespace WOTR_WoljifRomanceMod
         {
             var action = GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.StopCutscene>(bp =>
             {
-                bp.m_Cutscene = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
-                                <Kingmaker.Blueprints.CutsceneReference>(cutscene);
+                typeof(Kingmaker.Designers.EventConditionActionSystem.Actions.StopCutscene)
+                    .GetField("m_Cutscene", BindingFlags.NonPublic | BindingFlags.Instance)
+                    .SetValue(bp, Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
+                                <Kingmaker.Blueprints.CutsceneReference>(cutscene));
             });
             return action;
         }
@@ -442,7 +451,11 @@ namespace WOTR_WoljifRomanceMod
             var result = GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.TimeSkip>(bp =>
             {
                 bp.NoFatigue = nofatigue;
-                bp.m_Type = Kingmaker.Designers.EventConditionActionSystem.Actions.TimeSkip.SkipType.Minutes;
+                var skipType = typeof(Kingmaker.Designers.EventConditionActionSystem.Actions.TimeSkip).GetNestedType("SkipType", BindingFlags.NonPublic);
+                var min = Enum.Parse(skipType, "Minutes");
+                typeof(Kingmaker.Designers.EventConditionActionSystem.Actions.TimeSkip)
+                    .GetField("m_Type", BindingFlags.NonPublic | BindingFlags.Instance)
+                    .SetValue(bp, min);
                 bp.MinutesToSkip = skip;
             });
             return result;
@@ -480,7 +493,11 @@ namespace WOTR_WoljifRomanceMod
             var result = GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.TimeSkip>(bp =>
             {
                 bp.NoFatigue = nofatigue;
-                bp.m_Type = Kingmaker.Designers.EventConditionActionSystem.Actions.TimeSkip.SkipType.TimeOfDay;
+                var skipType = typeof(Kingmaker.Designers.EventConditionActionSystem.Actions.TimeSkip).GetNestedType("SkipType", BindingFlags.NonPublic);
+                var daytime = Enum.Parse(skipType, "TimeOfDay");
+                typeof(Kingmaker.Designers.EventConditionActionSystem.Actions.TimeSkip)
+                    .GetField("m_Type", BindingFlags.NonPublic | BindingFlags.Instance)
+                    .SetValue(bp, daytime);
                 bp.MatchTimeOfDay = true;
                 bp.TimeOfDay = time;
             });
@@ -525,9 +542,13 @@ namespace WOTR_WoljifRomanceMod
         {
             var action = GenericAction<Kingmaker.Kingdom.Actions.KingdomActionStartEvent>(bp =>
             {
-                bp.m_Event = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
-                             <BlueprintKingdomEventBaseReference>(commandevent);
-                bp.m_Region = (BlueprintRegionReference)null;
+                typeof(Kingmaker.Kingdom.Actions.KingdomActionStartEvent)
+                    .GetField("m_Event", BindingFlags.NonPublic | BindingFlags.Instance)
+                    .SetValue(bp, Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
+                             <BlueprintKingdomEventBaseReference>(commandevent));
+                typeof(Kingmaker.Kingdom.Actions.KingdomActionStartEvent)
+                    .GetField("m_Region", BindingFlags.NonPublic | BindingFlags.Instance)
+                    .SetValue(bp, null);
             });
             return action;
         }
@@ -536,8 +557,10 @@ namespace WOTR_WoljifRomanceMod
         {
             var action = GenericAction<Kingmaker.Kingdom.Actions.KingdomActionRemoveEvent>(bp =>
             {
-                bp.m_EventBlueprint = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
-                                      <BlueprintKingdomEventBaseReference>(commandevent);
+                typeof(Kingmaker.Kingdom.Actions.KingdomActionRemoveEvent)
+                    .GetField("m_EventBlueprint", BindingFlags.NonPublic | BindingFlags.Instance)
+                    .SetValue(bp, Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
+                                      <BlueprintKingdomEventBaseReference>(commandevent));
                 bp.CancelIfInProgress = true;
                 bp.AllIfMultiple = true;
             });
@@ -555,7 +578,9 @@ namespace WOTR_WoljifRomanceMod
         {
             var action = GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.StartDialog>(bp =>
             {
-                bp.m_Dialogue = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<BlueprintDialogReference>(dialog);
+                typeof(Kingmaker.Designers.EventConditionActionSystem.Actions.StartDialog)
+                    .GetField("m_Dialogue", BindingFlags.NonPublic | BindingFlags.Instance)
+                    .SetValue(bp, Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<BlueprintDialogReference>(dialog));
                 bp.DialogueOwner = CompanionTools.GetCompanionEvaluator(speaker, dialog);
             });
             return action;
@@ -635,9 +660,11 @@ namespace WOTR_WoljifRomanceMod
         {
             var result = GenericAction<Kingmaker.Designers.EventConditionActionSystem.Actions.TeleportParty>(bp =>
             {
-                bp.m_exitPositon = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
+                typeof(Kingmaker.Designers.EventConditionActionSystem.Actions.TeleportParty)
+                    .GetField("m_exitPositon", BindingFlags.NonPublic | BindingFlags.Instance)
+                    .SetValue(bp, Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
                                    <Kingmaker.Blueprints.BlueprintAreaEnterPointReference>(
-                                   Resources.GetBlueprint<Kingmaker.Blueprints.Area.BlueprintAreaEnterPoint>(exitposition));
+                                   Resources.GetBlueprint<Kingmaker.Blueprints.Area.BlueprintAreaEnterPoint>(exitposition)));
                 if (afterTeleport == null)
                 {
                     bp.AfterTeleport = DialogTools.EmptyActionList;
@@ -666,7 +693,9 @@ namespace WOTR_WoljifRomanceMod
             {
                 bp.Unit = CompanionTools.GetCompanionEvaluator(unit, owner);
                 bp.translocatePositionEvaluator = position;
-                bp.m_CopyRotation = true;
+                typeof(Kingmaker.Designers.EventConditionActionSystem.Actions.TranslocateUnit)
+                    .GetField("m_CopyRotation", BindingFlags.NonPublic | BindingFlags.Instance)
+                    .SetValue(bp, true);
                 bp.translocateOrientationEvaluator = position.GetRotation();
             });
             return result;

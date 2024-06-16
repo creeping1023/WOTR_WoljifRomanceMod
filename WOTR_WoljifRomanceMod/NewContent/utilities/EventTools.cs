@@ -11,6 +11,7 @@ using Kingmaker.Utility;
 using JetBrains.Annotations;
 using System;
 using Kingmaker.Blueprints.Area;
+using System.Reflection;
 
 //##########################################################################################################################
 // EVENT TOOLS
@@ -36,16 +37,20 @@ namespace WOTR_WoljifRomanceMod
         {
             var result = Helpers.CreateBlueprint<Kingmaker.Kingdom.Blueprints.BlueprintKingdomEvent>(name, bp =>
                 {
-                    bp.m_DependsOnQuest = (Kingmaker.Blueprints.BlueprintQuestReference)null;
-                    bp.m_Tags = new Kingmaker.Kingdom.Blueprints.BlueprintKingdomEvent.TagList();
+                    typeof(Kingmaker.Kingdom.Blueprints.BlueprintKingdomEvent)
+                        .GetField("m_DependsOnQuest", BindingFlags.NonPublic | BindingFlags.Instance)
+                        .SetValue(bp, null);
+                    typeof(Kingmaker.Kingdom.Blueprints.BlueprintKingdomEvent)
+                       .GetField("m_Tags", BindingFlags.NonPublic | BindingFlags.Instance)
+                       .SetValue(bp, new Kingmaker.Kingdom.Blueprints.BlueprintKingdomEvent.TagList());
                     bp.RequiredTags = new Kingmaker.Kingdom.EventLocationTagList();
                     bp.OnTrigger = DialogTools.EmptyActionList;
                     bp.StatsOnTrigger = new Kingmaker.Kingdom.KingdomStats.Changes();
                     bp.UnapplyTriggerOnResolve = true;
                     bp.LocalizedName = new Kingmaker.Localization.LocalizedString 
-                                           { m_Key = name };
+                                           { Key = name };
                     bp.LocalizedDescription = new Kingmaker.Localization.LocalizedString 
-                                                  { m_Key = description };
+                                                  { Key = description };
                     bp.TriggerCondition = DialogTools.EmptyConditionChecker;
                     bp.ResolutionTime = 200;
                     bp.NeedToVisitTheThroneRoom = true;
@@ -53,8 +58,8 @@ namespace WOTR_WoljifRomanceMod
                     bp.AutoResolveResult = Kingmaker.Kingdom.Blueprints.EventResult.MarginType.Fail;
                     bp.Solutions = new Kingmaker.Kingdom.Blueprints.PossibleEventSolutions 
                                        { Entries = new Kingmaker.Kingdom.Blueprints.PossibleEventSolution[4] };
-                    bp.Components = new BlueprintComponent[1];
-                    bp.Components[0] = new Kingmaker.Kingdom.Blueprints.EventFinalResults 
+                    bp.ComponentsArray = new BlueprintComponent[1];
+                    bp.ComponentsArray[0] = new Kingmaker.Kingdom.Blueprints.EventFinalResults 
                                            { Results = new Kingmaker.Kingdom.Blueprints.EventResult[0] };
                 });
             for (int i = 0; i < 4; i++)
@@ -78,7 +83,7 @@ namespace WOTR_WoljifRomanceMod
                                          Kingmaker.Kingdom.Blueprints.EventResult.MarginType restype, string description)
         {
             string uniquename = eventcard.name + "_" + restype.ToString();
-            var resultlist = (Kingmaker.Kingdom.Blueprints.EventFinalResults)eventcard.Components[0];
+            var resultlist = (Kingmaker.Kingdom.Blueprints.EventFinalResults)eventcard.ComponentsArray[0];
             if (resultlist.Results == null)
             {
                 resultlist.Results = new Kingmaker.Kingdom.Blueprints.EventResult[0];
@@ -94,7 +99,7 @@ namespace WOTR_WoljifRomanceMod
                     Actions = DialogTools.EmptyActionList,
                     StatChanges = new Kingmaker.Kingdom.KingdomStats.Changes(),
                     SuccessCount = 1,
-                    LocalizedDescription = new Kingmaker.Localization.LocalizedString { m_Key = description }
+                    LocalizedDescription = new Kingmaker.Localization.LocalizedString { Key = description }
                 };
         }
 

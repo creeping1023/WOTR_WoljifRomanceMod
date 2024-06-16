@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using Kingmaker.Utility;
 using JetBrains.Annotations;
 using System;
+using System.Reflection;
 
 namespace WOTR_WoljifRomanceMod
 {
@@ -240,7 +241,7 @@ namespace WOTR_WoljifRomanceMod
         {
             var result = Helpers.CreateBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>(name, bp =>
                 {
-                    bp.Text = new Kingmaker.Localization.LocalizedString { m_Key = key };
+                    bp.Text = new Kingmaker.Localization.LocalizedString { Key = key };
                     bp.Continue = EmptyCueSelection;
                     bp.AlignmentShift = EmptyAlignmentShift;
                     bp.Conditions = EmptyConditionChecker;
@@ -353,8 +354,10 @@ namespace WOTR_WoljifRomanceMod
         {
             if (cue.Speaker == EmptyDialogSpeaker)
             {
-                cue.Speaker = new Kingmaker.DialogSystem.DialogSpeaker 
-                                  { m_Blueprint = CompanionTools.GetCompanionReference(speaker) };
+                cue.Speaker = new Kingmaker.DialogSystem.DialogSpeaker{  };
+                typeof(DialogSpeaker)
+                    .GetField("m_Blueprint", BindingFlags.NonPublic | BindingFlags.Instance)
+                    .SetValue(cue.Speaker, CompanionTools.GetCompanionReference(speaker));
             }
             if (setconditional)
             {
@@ -542,7 +545,7 @@ namespace WOTR_WoljifRomanceMod
         {
             var result = Helpers.CreateBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintAnswer>(name, bp =>
                 {
-                    bp.Text = new Kingmaker.Localization.LocalizedString { m_Key = key };
+                    bp.Text = new Kingmaker.Localization.LocalizedString { Key = key };
                     bp.NextCue = EmptyCueSelection;
                     bp.AlignmentShift = EmptyAlignmentShift;
                     bp.ShowConditions = EmptyConditionChecker;
@@ -696,7 +699,7 @@ namespace WOTR_WoljifRomanceMod
                 { 
                     Direction = dir, 
                     Value = 1, 
-                    Description = new Kingmaker.Localization.LocalizedString { m_Key = descriptionkey } 
+                    Description = new Kingmaker.Localization.LocalizedString { Key = descriptionkey } 
                 };
         }
 
@@ -764,10 +767,14 @@ namespace WOTR_WoljifRomanceMod
                     bp.Conditions = EmptyConditionChecker;
                     bp.Type = type;
                     bp.DC = DC;
-                    bp.m_Success = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
-                                   <Kingmaker.Blueprints.BlueprintCueBaseReference>(success);
-                    bp.m_Fail = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
-                                <Kingmaker.Blueprints.BlueprintCueBaseReference>(failure);
+                    typeof(Kingmaker.DialogSystem.Blueprints.BlueprintCheck)
+                        .GetField("m_Success", BindingFlags.NonPublic | BindingFlags.Instance)
+                        .SetValue(bp, Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
+                                   <Kingmaker.Blueprints.BlueprintCueBaseReference>(success));
+                    typeof(Kingmaker.DialogSystem.Blueprints.BlueprintCheck)
+                        .GetField("m_Fail", BindingFlags.NonPublic | BindingFlags.Instance)
+                        .SetValue(bp, Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
+                                <Kingmaker.Blueprints.BlueprintCueBaseReference>(failure));
                     bp.Hidden = hidden;
                     bp.Experience = exp;
                 });

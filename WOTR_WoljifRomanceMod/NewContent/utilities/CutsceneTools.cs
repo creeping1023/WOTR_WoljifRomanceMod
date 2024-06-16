@@ -69,12 +69,12 @@ namespace WOTR_WoljifRomanceMod
             if (numtracks == null) numtracks = 0;
             var result = Helpers.CreateBlueprint<Kingmaker.AreaLogic.Cutscenes.Cutscene>(name, bp => {
                 bp.Color = UnityEngine.Color.white;
-                bp.m_Tracks = new List<Kingmaker.AreaLogic.Cutscenes.Track>();
+                bp.StartedTracks = new List<Kingmaker.AreaLogic.Cutscenes.Track>();
                 for (int i = 0; i < numtracks; i++)
                 {
-                    bp.m_Tracks.Add(tracks[i]);
+                    bp.StartedTracks.Add(tracks[i]);
                 }
-                bp.m_ActivationMode = Kingmaker.AreaLogic.Cutscenes.Gate.ActivationModeType.AllTracks;
+                bp.ActivationMode = Kingmaker.AreaLogic.Cutscenes.Gate.ActivationModeType.AllTracks;
                 bp.PauseForOneFrame = false;
 
                 bp.NonSkippable = false;
@@ -163,13 +163,13 @@ namespace WOTR_WoljifRomanceMod
             var result = Helpers.CreateBlueprint<Kingmaker.AreaLogic.Cutscenes.Gate>(name, bp => 
                 {
                     bp.Color = UnityEngine.Color.white;
-                    bp.m_Tracks = new List<Kingmaker.AreaLogic.Cutscenes.Track>();
+                    bp.StartedTracks = new List<Kingmaker.AreaLogic.Cutscenes.Track>();
                     for (int i = 0; i<numtracks; i++)
                     {
-                        bp.m_Tracks.Add(tracks[i]);
+                        bp.StartedTracks.Add(tracks[i]);
                     }
-                    bp.m_Op = op;
-                    bp.m_ActivationMode = Kingmaker.AreaLogic.Cutscenes.Gate.ActivationModeType.AllTracks;
+                    bp.Op = op;
+                    bp.ActivationMode = Kingmaker.AreaLogic.Cutscenes.Gate.ActivationModeType.AllTracks;
                     bp.WhenTrackIsSkipped = skipmodetype;
                     bp.PauseForOneFrame = false;
                 });
@@ -227,11 +227,11 @@ namespace WOTR_WoljifRomanceMod
                 numcommands = commandrefs.Length;
             }
             var result = new Kingmaker.AreaLogic.Cutscenes.Track();
-            result.m_EndGate = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
+            result.EndGate = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
                                <Kingmaker.Blueprints.GateReference>(endgate);
             for (int i = 0; i < numcommands; i++)
             {
-                result.m_Commands.Add(commandrefs[i]);
+                result.Commands.Add(commandrefs[i]);
             }
             return result;
         }
@@ -261,7 +261,7 @@ namespace WOTR_WoljifRomanceMod
             }
             for (int i = 0; i < numcommands; i++)
             {
-                track.m_Commands.Add(refs[i]);
+                track.Commands.Add(refs[i]);
             }
         }
     }

@@ -152,7 +152,7 @@ namespace TabletopTweaks.Utilities
             //};
 
             LocalizationManager.CurrentPack.PutString(key, value);
-            localized = new LocalizedString { m_ShouldProcess = false, m_Key = key };
+            localized = new LocalizedString { ShouldProcess = false, Key = key };
 
             textToLocalizedString[value] = localized;
             return localized;
@@ -215,26 +215,43 @@ namespace TabletopTweaks.Utilities
             BlueprintFeature feature = null, BlueprintFeature[] featureList = null,
             (int, int)[] customProgression = null)
         {
-            var config = new ContextRankConfig()
-            {
-                m_Type = type,
-                m_BaseValueType = baseValueType,
-                m_Progression = progression,
-                m_UseMin = min.HasValue,
-                m_Min = min.GetValueOrDefault(),
-                m_UseMax = max.HasValue,
-                m_Max = max.GetValueOrDefault(),
-                m_StartLevel = startLevel,
-                m_StepLevel = stepLevel,
-                m_Feature = feature.ToReference<BlueprintFeatureReference>(),
-                m_ExceptClasses = exceptClasses,
-                m_CustomProperty = customProperty.ToReference<BlueprintUnitPropertyReference>(),
-                m_Stat = stat,
-                m_Class = classes == null ? Array.Empty<BlueprintCharacterClassReference>() : classes.Select(c => c.ToReference<BlueprintCharacterClassReference>()).ToArray(),
-                Archetype = archetype.ToReference<BlueprintArchetypeReference>(),
-                m_AdditionalArchetypes = archetypes == null ? Array.Empty<BlueprintArchetypeReference>() : archetypes.Select(c => c.ToReference<BlueprintArchetypeReference>()).ToArray(),
-                m_FeatureList = featureList == null ? Array.Empty<BlueprintFeatureReference>() : featureList.Select(c => c.ToReference<BlueprintFeatureReference>()).ToArray()
-            };
+            var config = new ContextRankConfig(){};
+            var t = typeof(ContextRankConfig);
+            t.GetField("m_Type", BindingFlags.NonPublic | BindingFlags.Instance)
+                .SetValue(config, type);
+            t.GetField("m_BaseValueType", BindingFlags.NonPublic | BindingFlags.Instance)
+                .SetValue(config, baseValueType);
+            t.GetField("m_Progression", BindingFlags.NonPublic | BindingFlags.Instance)
+                .SetValue(config, progression);
+            t.GetField("m_UseMin", BindingFlags.NonPublic | BindingFlags.Instance)
+                .SetValue(config, min.HasValue);
+            t.GetField("m_Min", BindingFlags.NonPublic | BindingFlags.Instance)
+                .SetValue(config, min.GetValueOrDefault());
+            t.GetField("m_UseMax", BindingFlags.NonPublic | BindingFlags.Instance)
+                .SetValue(config, max.HasValue);
+            t.GetField("m_Max", BindingFlags.NonPublic | BindingFlags.Instance)
+                .SetValue(config, max.GetValueOrDefault());
+            t.GetField("m_StartLevel", BindingFlags.NonPublic | BindingFlags.Instance)
+                .SetValue(config, startLevel);
+            t.GetField("m_StepLevel", BindingFlags.NonPublic | BindingFlags.Instance)
+                .SetValue(config, stepLevel);
+            t.GetField("m_Feature", BindingFlags.NonPublic | BindingFlags.Instance)
+                .SetValue(config, feature.ToReference<BlueprintFeatureReference>());
+            t.GetField("m_ExceptClasses", BindingFlags.NonPublic | BindingFlags.Instance)
+                .SetValue(config, exceptClasses);
+            t.GetField("m_CustomProperty", BindingFlags.NonPublic | BindingFlags.Instance)
+                .SetValue(config, customProperty.ToReference<BlueprintUnitPropertyReference>());
+            t.GetField("m_Stat", BindingFlags.NonPublic | BindingFlags.Instance)
+                .SetValue(config, stat);
+            t.GetField("m_Class", BindingFlags.NonPublic | BindingFlags.Instance)
+                .SetValue(config, classes == null ? Array.Empty<BlueprintCharacterClassReference>() : classes.Select(c => c.ToReference<BlueprintCharacterClassReference>()).ToArray());
+            t.GetField("Archetype", BindingFlags.NonPublic | BindingFlags.Instance)
+                .SetValue(config, archetype.ToReference<BlueprintArchetypeReference>());
+            t.GetField("m_AdditionalArchetypes", BindingFlags.NonPublic | BindingFlags.Instance)
+                .SetValue(config, archetypes == null ? Array.Empty<BlueprintArchetypeReference>() : archetypes.Select(c => c.ToReference<BlueprintArchetypeReference>()).ToArray());
+            t.GetField("m_FeatureList", BindingFlags.NonPublic | BindingFlags.Instance)
+                .SetValue(config, featureList == null ? Array.Empty<BlueprintFeatureReference>() : featureList.Select(c => c.ToReference<BlueprintFeatureReference>()).ToArray());
+
 #if false
             var config = Helpers.Create<ContextRankConfig>(bp => {
                 bp.m_Type = type;

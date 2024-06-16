@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using Kingmaker.Utility;
 using JetBrains.Annotations;
 using System;
+using System.Reflection;
 
 //##########################################################################################################################
 // ETUDE AND FLAG TOOLS
@@ -72,21 +73,35 @@ namespace WOTR_WoljifRomanceMod
         {
             var result = Helpers.CreateBlueprint<Kingmaker.AreaLogic.Etudes.BlueprintEtude>(name, bp =>
                 {
-                    bp.m_StartsParent = startsparent;
-                    bp.m_CompletesParent = completesparent;
-                    bp.m_AllowActionStart = true;
-                    bp.m_IncludeAreaParts = false;
+                    var bpe = typeof(Kingmaker.AreaLogic.Etudes.BlueprintEtude);
+                    bpe.GetField("m_StartsParent", BindingFlags.NonPublic | BindingFlags.Instance)
+                        .SetValue(bp, startsparent);
+                    bpe.GetField("m_CompletesParent", BindingFlags.NonPublic | BindingFlags.Instance)
+                        .SetValue(bp, completesparent);
+                    bpe.GetField("m_AllowActionStart", BindingFlags.NonPublic | BindingFlags.Instance)
+                        .SetValue(bp, true);
+                    bpe.GetField("m_IncludeAreaParts", BindingFlags.NonPublic | BindingFlags.Instance)
+                        .SetValue(bp, false);
 
-                    bp.m_Parent = parent;
+                    bpe.GetField("m_Parent", BindingFlags.NonPublic | BindingFlags.Instance)
+                        .SetValue(bp, parent);
 
-                    bp.m_StartsOnComplete = new List<BlueprintEtudeReference>();
-                    bp.m_StartsWith = new List<BlueprintEtudeReference>();
-                    bp.m_Synchronized = new List<BlueprintEtudeReference>();
+                    bpe.GetField("m_StartsOnComplete", BindingFlags.NonPublic | BindingFlags.Instance)
+                        .SetValue(bp, new List<BlueprintEtudeReference>());
+                    bpe.GetField("m_StartsWith", BindingFlags.NonPublic | BindingFlags.Instance)
+                        .SetValue(bp, new List<BlueprintEtudeReference>());
+                    bpe.GetField("m_Synchronized", BindingFlags.NonPublic | BindingFlags.Instance)
+                        .SetValue(bp, new List<BlueprintEtudeReference>());
 
-                    bp.m_ConflictingGroups = new List<BlueprintEtudeConflictingGroupReference>();
+                    bpe.GetField("m_ConflictingGroups", BindingFlags.NonPublic | BindingFlags.Instance)
+                        .SetValue(bp, new List<BlueprintEtudeConflictingGroupReference>());
 
-                    bp.m_LinkedAreaPart = new BlueprintAreaPartReference() { deserializedGuid = BlueprintGuid.Empty };
-                    bp.m_AddedAreaMechanics = new List<Kingmaker.Blueprints.Area.BlueprintAreaMechanicsReference>();
+                    var areaRef = new BlueprintAreaPartReference();
+                    areaRef.ReadGuidFromGuid(BlueprintGuid.Empty);
+                    bpe.GetField("m_LinkedAreaPart", BindingFlags.NonPublic | BindingFlags.Instance)
+                        .SetValue(bp, areaRef);
+                    bpe.GetField("m_AddedAreaMechanics", BindingFlags.NonPublic | BindingFlags.Instance)
+                        .SetValue(bp, new List<Kingmaker.Blueprints.Area.BlueprintAreaMechanicsReference>());
 
                     bp.CompletionCondition = DialogTools.EmptyConditionChecker;
                     bp.ActivationCondition = DialogTools.EmptyConditionChecker;
@@ -103,7 +118,7 @@ namespace WOTR_WoljifRomanceMod
         public static void EtudeAddStartsWith(Kingmaker.AreaLogic.Etudes.BlueprintEtude etude, 
                                               Kingmaker.AreaLogic.Etudes.BlueprintEtude startedetude)
         {
-            etude.m_StartsWith.Add(Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
+            (etude.StartsWith as List<BlueprintEtudeReference>).Add(Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
                                    <BlueprintEtudeReference>(startedetude));
         }
         public static void EtudeAddStartsWith(Kingmaker.AreaLogic.Etudes.BlueprintEtude etude, 
@@ -111,7 +126,7 @@ namespace WOTR_WoljifRomanceMod
         {
             foreach (Kingmaker.AreaLogic.Etudes.BlueprintEtude addedetude in startedetudes)
             {
-                etude.m_StartsWith.Add(Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
+                (etude.StartsWith as List<BlueprintEtudeReference>).Add(Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
                                        <BlueprintEtudeReference>(addedetude));
             }
         }
@@ -125,7 +140,7 @@ namespace WOTR_WoljifRomanceMod
         public static void EtudeAddStartsOnComplete(Kingmaker.AreaLogic.Etudes.BlueprintEtude etude, 
                                                     Kingmaker.AreaLogic.Etudes.BlueprintEtude startedetude)
         {
-            etude.m_StartsOnComplete.Add(Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
+            (etude.StartsOnComplete as List<BlueprintEtudeReference>).Add(Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
                                          <BlueprintEtudeReference>(startedetude));
         }
         public static void EtudeAddStartsOnComplete(Kingmaker.AreaLogic.Etudes.BlueprintEtude etude, 
@@ -133,7 +148,7 @@ namespace WOTR_WoljifRomanceMod
         {
             foreach (Kingmaker.AreaLogic.Etudes.BlueprintEtude addedetude in startedetudes)
             {
-                etude.m_StartsOnComplete.Add(Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
+                (etude.StartsOnComplete as List<BlueprintEtudeReference>).Add(Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
                                              <BlueprintEtudeReference>(addedetude));
             }
         }
@@ -217,7 +232,7 @@ namespace WOTR_WoljifRomanceMod
         public static void EtudeAddConflictingGroups(Kingmaker.AreaLogic.Etudes.BlueprintEtude etude, 
                                                      Kingmaker.AreaLogic.Etudes.BlueprintEtudeConflictingGroup group)
         {
-            etude.m_ConflictingGroups.Add(Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
+            (etude.ConflictingGroups as List<BlueprintEtudeConflictingGroupReference>).Add(Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
                                           <BlueprintEtudeConflictingGroupReference>(group));
         }
 
@@ -251,18 +266,20 @@ namespace WOTR_WoljifRomanceMod
         public static void EtudeAddComponent(Kingmaker.AreaLogic.Etudes.BlueprintEtude etude, BlueprintComponent comp)
         {
             var currentlen = 0;
-            if (etude.Components == null)
+            if (etude.ComponentsArray == null)
             {
-                etude.Components = new BlueprintComponent[1];
+                etude.ComponentsArray = new BlueprintComponent[1];
             }
             else
             {
-                currentlen = etude.Components.Length;
-                Array.Resize(ref etude.Components, currentlen + 1);
+                var arr = etude.ComponentsArray;
+                currentlen = arr.Length;
+                Array.Resize(ref arr, currentlen + 1);
+                etude.ComponentsArray = arr;
             }
             comp.OwnerBlueprint = etude;
             comp.name = Guid.NewGuid().ToString();
-            etude.Components[currentlen] = comp;
+            etude.ComponentsArray[currentlen] = comp;
         }
 
 

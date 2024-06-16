@@ -139,24 +139,30 @@ namespace WOTR_WoljifRomanceMod
             Kingmaker.ElementsSystem.Dialog dialogeval = (Kingmaker.ElementsSystem.Dialog)
                                                          Kingmaker.ElementsSystem.Element.CreateInstance(
                                                          typeof(Kingmaker.ElementsSystem.Dialog));
-            dialogeval.m_Value = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
-                                 <Kingmaker.Blueprints.BlueprintDialogReference>(InviteDialog);
+            typeof(Kingmaker.ElementsSystem.Dialog)
+                .GetField("m_Value", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                .SetValue(dialogeval, Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
+                                 <Kingmaker.Blueprints.BlueprintDialogReference>(InviteDialog));
             ActionTools.CutsceneActionAddParameter(playscene, "Dialog", "blueprint", dialogeval);
             Kingmaker.ElementsSystem.EtudeBlueprint etudeeval = (Kingmaker.ElementsSystem.EtudeBlueprint)
                                                                 Kingmaker.ElementsSystem.Element.CreateInstance(
                                                                 typeof(Kingmaker.ElementsSystem.EtudeBlueprint));
-            etudeeval.m_Value = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
-                                <Kingmaker.Blueprints.BlueprintEtudeReference>(EventEtude);
+            typeof(Kingmaker.ElementsSystem.EtudeBlueprint)
+                .GetField("m_Value", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                .SetValue(etudeeval, Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
+                                 <Kingmaker.Blueprints.BlueprintEtudeReference>(EventEtude));
             ActionTools.CutsceneActionAddParameter(playscene, "Etude", "blueprint", etudeeval);
 
             Kingmaker.ElementsSystem.GameAction[] actions = { unhideaction, playscene };
             EtudeTools.EtudeAddOnPlayTrigger(EventEtude, ActionTools.MakeList(actions));
 
             // not sure if needed?
-            EventEtude.m_LinkedAreaPart = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
-                                          <Kingmaker.Blueprints.BlueprintAreaPartReference>
-                                          (Resources.GetBlueprint<Kingmaker.Blueprints.Area.BlueprintAreaPart>
-                                          ("2570015799edf594daf2f076f2f975d8"));
+            typeof(Kingmaker.AreaLogic.Etudes.BlueprintEtude).GetField("m_LinkedAreaPart",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                .SetValue(EventEtude, Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
+                            <Kingmaker.Blueprints.BlueprintAreaPartReference>
+                            (Resources.GetBlueprint<Kingmaker.Blueprints.Area.BlueprintAreaPart>
+                            ("2570015799edf594daf2f076f2f975d8")));
 
             // Create timer and hook it up to the re-recruitment scene
             var rerecruitCue = Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintCue>
@@ -570,19 +576,22 @@ namespace WOTR_WoljifRomanceMod
             var giveobjective = ActionTools.GenericAction
                                 <Kingmaker.Designers.EventConditionActionSystem.Actions.GiveObjective>(bp =>
                 {
-                    bp.m_Objective = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
-                                     <Kingmaker.Blueprints.BlueprintQuestObjectiveReference>
-                                     (Resources.GetBlueprint<Kingmaker.Blueprints.Quests.BlueprintQuestObjective>
-                                     ("9b97232f7c5d6774c822e91ea6d075b8"));
+                    typeof(Kingmaker.Designers.EventConditionActionSystem.Actions.GiveObjective)
+                        .GetField("m_Objective", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                        .SetValue(bp, Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
+                                   <Kingmaker.Blueprints.BlueprintQuestObjectiveReference>
+                                   (Resources.GetBlueprint<Kingmaker.Blueprints.Quests.BlueprintQuestObjective>
+                                   ("9b97232f7c5d6774c822e91ea6d075b8")));
                 });
             DialogTools.CueAddOnStopAction(C_WarmSmile, giveobjective);
             var setobjective = ActionTools.GenericAction
                                <Kingmaker.Designers.EventConditionActionSystem.Actions.SetObjectiveStatus>(bp =>
                 {
-                    bp.m_Objective = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
+                    typeof(Kingmaker.Designers.EventConditionActionSystem.Actions.SetObjectiveStatus).GetField("m_Objective", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                        .SetValue(bp, Kingmaker.Blueprints.BlueprintReferenceEx.ToReference
                                      <Kingmaker.Blueprints.BlueprintQuestObjectiveReference>
                                      (Resources.GetBlueprint<Kingmaker.Blueprints.Quests.BlueprintQuestObjective>
-                                     ("54b9562225773f640a271b2c0686fbbc"));
+                                     ("54b9562225773f640a271b2c0686fbbc")));
                 });
             DialogTools.CueAddOnStopAction(C_WarmSmile, setobjective);
         }

@@ -18,6 +18,7 @@ using System.Linq;
 using TabletopTweaks.Utilities;
 using UnityEngine;
 using static Kingmaker.Blueprints.Classes.Prerequisites.Prerequisite;
+using static Kingmaker.UnitLogic.Parts.UnitPartMagus;
 
 namespace TabletopTweaks.Extensions
 {
@@ -177,7 +178,13 @@ namespace TabletopTweaks.Extensions
 
         public static void SetFeatures(this BlueprintFeatureSelection selection, params BlueprintFeature[] features)
         {
-            selection.m_AllFeatures = selection.m_Features = features.Select(bp => bp.ToReference<BlueprintFeatureReference>()).ToArray();
+            var feats = features.Select(bp => bp.ToReference<BlueprintFeatureReference>()).ToArray();
+            typeof(BlueprintFeatureSelection)
+                .GetField("m_AllFeatures", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                .SetValue(selection, feats);
+            typeof(BlueprintFeatureSelection)
+                .GetField("m_Features", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                .SetValue(selection, feats);
         }
 
         public static void RemoveFeatures(this BlueprintFeatureSelection selection, params BlueprintFeature[] features)
@@ -185,17 +192,38 @@ namespace TabletopTweaks.Extensions
             foreach (var feature in features)
             {
                 var featureReference = feature.ToReference<BlueprintFeatureReference>();
-                if (selection.m_AllFeatures.Contains(featureReference))
+                var m_AllFeatures0 = (BlueprintFeatureReference[])typeof(BlueprintFeatureSelection)
+                        .GetField("m_AllFeatures", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                        .GetValue(selection);
+                var m_Features0 = (BlueprintFeatureReference[])typeof(BlueprintFeatureSelection)
+                        .GetField("m_Features", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                        .GetValue(selection);
+                if (m_AllFeatures0.Contains(featureReference))
                 {
-                    selection.m_AllFeatures = selection.m_AllFeatures.Where(f => !f.Equals(featureReference)).ToArray();
+                    typeof(BlueprintFeatureSelection)
+                        .GetField("m_AllFeatures", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                        .SetValue(selection, m_AllFeatures0.Where(f => !f.Equals(featureReference)).ToArray());
                 }
-                if (selection.m_Features.Contains(featureReference))
+                if (m_Features0.Contains(featureReference))
                 {
-                    selection.m_Features = selection.m_Features.Where(f => !f.Equals(featureReference)).ToArray();
+                    typeof(BlueprintFeatureSelection)
+                        .GetField("m_Features", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                        .SetValue(selection, m_Features0.Where(f => !f.Equals(featureReference)).ToArray());
                 }
             }
-            selection.m_AllFeatures = selection.m_AllFeatures.OrderBy(feature => feature.Get().Name).ToArray();
-            selection.m_Features = selection.m_Features.OrderBy(feature => feature.Get().Name).ToArray();
+            var m_AllFeatures = (BlueprintFeatureReference[])typeof(BlueprintFeatureSelection)
+                        .GetField("m_AllFeatures", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                        .GetValue(selection);
+            typeof(BlueprintFeatureSelection)
+                .GetField("m_AllFeatures", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                .SetValue(selection, m_AllFeatures.OrderBy(feature => feature.Get().Name).ToArray());
+
+            var m_Features = (BlueprintFeatureReference[])typeof(BlueprintFeatureSelection)
+                        .GetField("m_Features", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                        .GetValue(selection);
+            typeof(BlueprintFeatureSelection)
+                .GetField("m_Features", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                .SetValue(selection, m_Features.OrderBy(feature => feature.Get().Name).ToArray());
         }
 
         public static void AddFeatures(this BlueprintFeatureSelection selection, params BlueprintFeature[] features)
@@ -203,17 +231,37 @@ namespace TabletopTweaks.Extensions
             foreach (var feature in features)
             {
                 var featureReference = feature.ToReference<BlueprintFeatureReference>();
-                if (!selection.m_AllFeatures.Contains(featureReference))
+                var m_AllFeatures0 = (BlueprintFeatureReference[])typeof(BlueprintFeatureSelection)
+                        .GetField("m_AllFeatures", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                        .GetValue(selection);
+                var m_Features0 = (BlueprintFeatureReference[])typeof(BlueprintFeatureSelection)
+                        .GetField("m_Features", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                        .GetValue(selection);
+                if (!m_AllFeatures0.Contains(featureReference))
                 {
-                    selection.m_AllFeatures = selection.m_AllFeatures.AppendToArray(featureReference);
+                    typeof(BlueprintFeatureSelection)
+                        .GetField("m_AllFeatures", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                        .SetValue(selection, m_AllFeatures0.AppendToArray(featureReference));
                 }
-                if (!selection.m_Features.Contains(featureReference))
+                if (!m_Features0.Contains(featureReference))
                 {
-                    selection.m_Features = selection.m_Features.AppendToArray(featureReference);
+                    typeof(BlueprintFeatureSelection)
+                        .GetField("m_Features", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                        .SetValue(selection, m_Features0.AppendToArray(featureReference));
                 }
             }
-            selection.m_AllFeatures = selection.m_AllFeatures.OrderBy(feature => feature.Get().Name).ToArray();
-            selection.m_Features = selection.m_Features.OrderBy(feature => feature.Get().Name).ToArray();
+            var m_AllFeatures = (BlueprintFeatureReference[])typeof(BlueprintFeatureSelection)
+                        .GetField("m_AllFeatures", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                        .GetValue(selection);
+            typeof(BlueprintFeatureSelection)
+                .GetField("m_AllFeatures", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                .SetValue(selection, m_AllFeatures.OrderBy(feature => feature.Get().Name).ToArray());
+            var m_Features = (BlueprintFeatureReference[])typeof(BlueprintFeatureSelection)
+                        .GetField("m_Features", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                        .GetValue(selection);
+            typeof(BlueprintFeatureSelection)
+                .GetField("m_Features", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                .SetValue(selection, m_Features.OrderBy(feature => feature.Get().Name).ToArray());
         }
         public static void AddPrerequisiteFeature(this BlueprintFeature obj, BlueprintFeature feature)
         {
@@ -222,7 +270,9 @@ namespace TabletopTweaks.Extensions
         public static void AddPrerequisiteFeature(this BlueprintFeature obj, BlueprintFeature feature, GroupType group)
         {
             obj.AddComponent(Helpers.Create<PrerequisiteFeature>(c => {
-                c.m_Feature = feature.ToReference<BlueprintFeatureReference>();
+                typeof(PrerequisiteFeature)
+                    .GetField("m_Feature", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                    .SetValue(c, feature.ToReference<BlueprintFeatureReference>());
                 c.Group = group;
             }));
             if (feature.IsPrerequisiteFor == null) { feature.IsPrerequisiteFor = new List<BlueprintFeatureReference>(); }
@@ -238,7 +288,9 @@ namespace TabletopTweaks.Extensions
         public static void AddPrerequisiteFeaturesFromList(this BlueprintFeature obj, int amount, GroupType group = GroupType.All, params BlueprintFeature[] features)
         {
             obj.AddComponent(Helpers.Create<PrerequisiteFeaturesFromList>(c => {
-                c.m_Features = features.Select(f => f.ToReference<BlueprintFeatureReference>()).ToArray();
+                typeof(PrerequisiteFeaturesFromList)
+                    .GetField("m_Feature", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                    .SetValue(c, features.Select(f => f.ToReference<BlueprintFeatureReference>()).ToArray());
                 c.Amount = amount;
                 c.Group = group;
             }));
@@ -437,28 +489,46 @@ namespace TabletopTweaks.Extensions
 
         public static void SetNameDescription(this BlueprintUnitFact feature, BlueprintUnitFact other)
         {
-            feature.m_DisplayName = other.m_DisplayName;
-            feature.m_Description = other.m_Description;
+            var name = (LocalizedString)typeof(BlueprintUnitFact)
+                .GetField("m_DisplayName", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                .GetValue(other);
+            var description = (LocalizedString)typeof(BlueprintUnitFact)
+                .GetField("m_Description", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                .GetValue(other);
+            typeof(BlueprintUnitFact)
+                .GetField("m_DisplayName", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                .SetValue(feature, name);
+            typeof(BlueprintUnitFact)
+                .GetField("m_Description", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                .SetValue(feature, description);
         }
 
         public static void SetName(this BlueprintUnitFact feature, LocalizedString name)
         {
-            feature.m_DisplayName = name;
+            typeof(BlueprintUnitFact)
+                .GetField("m_DisplayName", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                .SetValue(feature, name);
         }
 
         public static void SetName(this BlueprintUnitFact feature, String name)
         {
-            feature.m_DisplayName = Helpers.CreateString(feature.name + ".Name", name);
+            typeof(BlueprintUnitFact)
+                .GetField("m_DisplayName", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                .SetValue(feature, Helpers.CreateString(feature.name + ".Name", name));
         }
 
         public static void SetDescriptionUntagged(this BlueprintUnitFact feature, String description)
         {
-            feature.m_Description = Helpers.CreateString(feature.name + ".Description", description);
+            typeof(BlueprintUnitFact)
+                .GetField("m_Description", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                .SetValue(feature, Helpers.CreateString(feature.name + ".Description", description));
         }
 
         public static void SetDescription(this BlueprintUnitFact feature, LocalizedString description)
         {
-            feature.m_Description = description;
+            typeof(BlueprintUnitFact)
+                .GetField("m_Description", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                .SetValue(feature, description);
             //blueprintUnitFact_set_Description(feature) = description;
         }
 
@@ -466,7 +536,9 @@ namespace TabletopTweaks.Extensions
         {
             //var taggedDescription = DescriptionTools.TagEncyclopediaEntries(description);
             //feature.m_Description = Helpers.CreateString(feature.name + ".Description", taggedDescription);
-            feature.m_Description = Helpers.CreateString(feature.name + ".Description", description);
+            typeof(BlueprintUnitFact)
+                .GetField("m_Description", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                .SetValue(feature, Helpers.CreateString(feature.name + ".Description", description));
         }
 
         public static bool HasFeatureWithId(this LevelEntry level, String id)

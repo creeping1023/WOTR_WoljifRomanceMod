@@ -12,6 +12,7 @@ using JetBrains.Annotations;
 using System;
 using Kingmaker.AreaLogic.Cutscenes;
 using Kingmaker.EntitySystem.Entities;
+using System.Reflection;
 
 //##########################################################################################################################
 // COMMAND TOOLS
@@ -86,7 +87,7 @@ namespace WOTR_WoljifRomanceMod
         {
             var result = GenericCommand<Kingmaker.AreaLogic.Cutscenes.Commands.CommandBark>("bark_" + name);
             result.SharedText = new Kingmaker.Localization.SharedStringAsset();
-            result.SharedText.String = new Kingmaker.Localization.LocalizedString { m_Key = key };
+            result.SharedText.String = new Kingmaker.Localization.LocalizedString { Key = key };
             result.Unit = CompanionTools.GetCompanionEvaluator(target, result);
             result.BarkDurationByText = true;
             result.AwaitFinish = true;
@@ -164,16 +165,22 @@ namespace WOTR_WoljifRomanceMod
          * FADEOUT COMMAND
          * Fades camera to black and back again.
          ******************************************************************************************************************/
-        public static Kingmaker.AreaLogic.Cutscenes.Commands.CommandFadeout FadeoutCommand()
+        public static Kingmaker.AreaLogic.Cutscenes.Commands.CutsceneCommandFadeout FadeoutCommand()
         {
             numfadeouts++;
             string name = "fadeout_" + numfadeouts.ToString();
-            var result = GenericCommand<Kingmaker.AreaLogic.Cutscenes.Commands.CommandFadeout>(name);
-            result.m_Continuous = true;
-            result.m_Lifetime = 1.0f;
-            result.m_OnFaded = new Kingmaker.AreaLogic.Cutscenes.CommandBase.CommandSignalData();
-            result.m_OnFaded.Gate = null;
-            result.m_OnFaded.Name = "OnFaded";
+            var result = GenericCommand<Kingmaker.AreaLogic.Cutscenes.Commands.CutsceneCommandFadeout>(name);
+
+            var t = typeof(Kingmaker.AreaLogic.Cutscenes.Commands.CutsceneCommandFadeout);
+            t.GetField("m_Continuous", BindingFlags.NonPublic | BindingFlags.Instance)
+                .SetValue(result, true);
+            t.GetField("m_Lifetime", BindingFlags.NonPublic | BindingFlags.Instance)
+                .SetValue(result, 1.0f);
+            var onFaded = new Kingmaker.AreaLogic.Cutscenes.CommandBase.CommandSignalData();
+            onFaded.Gate = null;
+            onFaded.Name = "OnFaded";
+            t.GetField("m_OnFaded", BindingFlags.NonPublic | BindingFlags.Instance)
+                .SetValue(result, onFaded);
             return result;
         }
 
@@ -200,7 +207,9 @@ namespace WOTR_WoljifRomanceMod
             var autoname = "command_" + dialog.name;
             var result = GenericCommand<Kingmaker.AreaLogic.Cutscenes.Commands.CommandStartDialog>(autoname);
             result.Speaker = CompanionTools.GetCompanionEvaluator(speaker, result);
-            result.m_Dialog = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<BlueprintDialogReference>(dialog);
+            typeof(Kingmaker.AreaLogic.Cutscenes.Commands.CommandStartDialog)
+                .GetField("m_Dialog", BindingFlags.NonPublic | BindingFlags.Instance)
+                .SetValue(result, Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<BlueprintDialogReference>(dialog));
             return result;
         }
         public static Kingmaker.AreaLogic.Cutscenes.Commands.CommandStartDialog StartDialogCommand(
@@ -208,8 +217,10 @@ namespace WOTR_WoljifRomanceMod
         {
             var result = GenericCommand<Kingmaker.AreaLogic.Cutscenes.Commands.CommandStartDialog>("command_"+dialogid);
             result.Speaker = CompanionTools.GetCompanionEvaluator(speaker, result);
-            result.m_Dialog = Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<BlueprintDialogReference>
-                              (Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintDialog>(dialogid));
+            typeof(Kingmaker.AreaLogic.Cutscenes.Commands.CommandStartDialog)
+                .GetField("m_Dialog", BindingFlags.NonPublic | BindingFlags.Instance)
+                .SetValue(result, Kingmaker.Blueprints.BlueprintReferenceEx.ToReference<BlueprintDialogReference>
+                              (Resources.GetBlueprint<Kingmaker.DialogSystem.Blueprints.BlueprintDialog>(dialogid)));
             return result;
         }
 
@@ -254,7 +265,9 @@ namespace WOTR_WoljifRomanceMod
                       string name, Companions unit, FakeLocator position, bool vanish = false)
         {
             var result = GenericCommand<Kingmaker.AreaLogic.Cutscenes.Commands.CommandMoveUnit>(name);
-            result.m_Timeout = 20.0f;
+            typeof(Kingmaker.AreaLogic.Cutscenes.Commands.CommandMoveUnit)
+                .GetField("m_Timeout", BindingFlags.NonPublic | BindingFlags.Instance)
+                .SetValue(result, 20.0f);
             result.Unit = CompanionTools.GetCompanionEvaluator(unit, result);
             result.DisableAvoidance = true;
             result.RunAway = vanish;
@@ -282,18 +295,27 @@ namespace WOTR_WoljifRomanceMod
             var newhandle = Kingmaker.ResourceManagement.BundledResourceHandle
                             <Kingmaker.Visual.Animation.AnimationClipWrapper>.Request(commandid);
             var newwrapperlink = new Kingmaker.ResourceLinks.AnimationClipWrapperLink 
-                { 
-                    m_Handle = newhandle, 
-                    AssetId = newhandle.m_AssetId 
-                };
+            { 
+                AssetId = newhandle.AssetId
+            };
+            typeof(Kingmaker.ResourceLinks.AnimationClipWrapperLink)
+                .GetProperty("m_Handle", BindingFlags.NonPublic | BindingFlags.Instance)
+                .SetValue(newwrapperlink, newhandle);
 
             var anim = GenericCommand<Kingmaker.AreaLogic.Cutscenes.Commands.CommandUnitPlayCutsceneAnimation>(name, bp =>
             {
-                bp.m_Unit = CompanionTools.GetCompanionEvaluator(companion, bp);
-                bp.m_CutsceneClipWrapper = newwrapperlink;
-                bp.m_WaitForCurrentAnimation = false;
-                bp.AddToElementsList(bp.m_Unit);
-                bp.m_LockRotation = lockrotation;
+                var t = typeof(Kingmaker.AreaLogic.Cutscenes.Commands.CommandUnitPlayCutsceneAnimation);
+                t.GetField("m_Unit", BindingFlags.NonPublic | BindingFlags.Instance)
+                    .SetValue(bp, CompanionTools.GetCompanionEvaluator(companion, bp));
+                t.GetField("m_CutsceneClipWrapper", BindingFlags.NonPublic | BindingFlags.Instance)
+                    .SetValue(bp, newwrapperlink);
+                t.GetField("m_WaitForCurrentAnimation", BindingFlags.NonPublic | BindingFlags.Instance)
+                    .SetValue(bp, false);
+                var m_Unit = (Kingmaker.ElementsSystem.Element)t.GetField("m_Unit", BindingFlags.NonPublic | BindingFlags.Instance)
+                    .GetValue(bp);
+                bp.AddToElementsList(m_Unit);
+                t.GetField("m_LockRotation", BindingFlags.NonPublic | BindingFlags.Instance)
+                    .SetValue(bp, lockrotation);
             });
             return anim;
         }
